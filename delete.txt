@@ -1,0 +1,7 @@
+kubectl delete -f Broker
+
+kubectl delete -f Redis
+
+kubectl delete -f another-autoscaler.yml
+
+kubectl delete -f optalpha-deployment.yml

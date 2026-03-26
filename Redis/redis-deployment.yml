@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: optalpha-deployment
+  annotations:
+    another-autoscaler/restart-time: "30 22 * * *"
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - image: redis:7.0
+          name: redis-sevan-zero
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "52Mi"
+            limits:
+              cpu: "75m"
+              memory: "78Mi"

@@ -1,0 +1,7 @@
+kubectl apply -f optalpha-deployment.yml
+
+kubectl apply -f another-autoscaler.yml
+
+kubectl apply -f Redis
+
+kubectl apply -f Broker
