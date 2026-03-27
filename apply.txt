@@ -1,7 +1,13 @@
-kubectl apply -f optalpha-deployment.yml
+Windows:
+pscp -r optalpha-broker_cluster root@<server ip>:/root
 
-kubectl apply -f another-autoscaler.yml
+Linux and Mac
+scp -r optalpha-broker_cluster root@<server ip>:/root
 
-kubectl apply -f Redis
+ssh root@<server ip>
 
-kubectl apply -f Broker
+sudo chmod +x /root/optalpha-broker_cluster/deploy.sh
+
+/root/optalpha-broker_cluster/deploy.sh
+
+exit

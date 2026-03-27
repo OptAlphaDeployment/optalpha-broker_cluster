@@ -1,7 +1,7 @@
-kubectl delete -f Broker
+ssh root@<server ip>
 
-kubectl delete -f Redis
+sudo chmod +x /root/optalpha-broker_cluster/destroy.sh
 
-kubectl delete -f another-autoscaler.yml
+/root/optalpha-broker_cluster/destroy.sh
 
-kubectl delete -f optalpha-deployment.yml
+exit
