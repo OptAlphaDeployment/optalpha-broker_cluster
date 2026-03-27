@@ -1,6 +1,6 @@
 # Broker Cluster
 
-Kubernetes deployment manifests for the **OptAlpha Broker API** service with Redis caching and time-based autoscaling.
+Kubernetes deployment manifests for the **OptAlpha Broker API** service with Redis caching, automated via shell scripts for easy server provisioning.
 
 ## Architecture
 
@@ -12,23 +12,27 @@ optalpha-deployment (namespace)
 └── redis-service           → ClusterIP service (6379)
 
 another (namespace)
-└── another-autoscaler      → Cron-based replica scaling
+└── another-autoscaler      → Cron-based restart scheduling
 ```
 
 ## Project Structure
 
 ```
-Broker_Cluster/
-├── Broker/
-│   ├── broker-api-deployment.yml   # Broker API deployment
-│   └── broker-api-service.yml      # NodePort service (30001)
-├── Redis/
-│   ├── redis-deployment.yml        # Redis 7.0 deployment
-│   └── redis-service.yml           # ClusterIP service
-├── another-autoscaler.yml          # Time-based autoscaler (RBAC + deployment)
-├── optalpha-deployment.yml         # Namespace definition
-├── apply.txt                       # kubectl apply order
-├── delete.txt                      # kubectl delete order
+optalpha-broker_cluster/          # Root (this repo)
+├── optalpha-broker_cluster/      # Deployment bundle (copied to server)
+│   ├── Broker/
+│   │   ├── broker-api-deployment.yml   # Broker API deployment
+│   │   └── broker-api-service.yml      # NodePort service (30001)
+│   ├── Redis/
+│   │   ├── redis-deployment.yml        # Redis 7.0 deployment
+│   │   └── redis-service.yml           # ClusterIP service
+│   ├── another-autoscaler.yml          # Autoscaler (RBAC + deployment)
+│   ├── optalpha-deployment.yml         # Namespace definition
+│   ├── deploy.sh                       # Provisions server & deploys cluster
+│   └── destroy.sh                      # Tears down cluster & uninstalls K3s
+├── apply.txt                           # Deploy instructions
+├── delete.txt                          # Teardown instructions
+├── pscp.exe                            # Windows SCP utility
 └── README.md
 ```
 
@@ -56,7 +60,7 @@ You **must** set these for Telegram alert notifications:
 | `token`   | Telegram Bot API token         |
 | `chat_id` | Telegram chat/group ID         |
 
-Set them in [`broker-api-deployment.yml`](Broker/broker-api-deployment.yml):
+Set them in [`broker-api-deployment.yml`](optalpha-broker_cluster/Broker/broker-api-deployment.yml):
 
 ```yaml
 env:
@@ -66,34 +70,57 @@ env:
     value: "<your-telegram-chat-id>"
 ```
 
-## Autoscaler Schedule
+## Restart Schedule
 
-The Broker API scales automatically via [another-autoscaler](https://github.com/dignajar/another-autoscaler):
+Both deployments are restarted daily via [another-autoscaler](https://github.com/dignajar/another-autoscaler) annotations:
 
-| Event | Cron (UTC)         | Replicas |
-| ----- | ------------------ | -------- |
-| Start | `15 03 * * *`      | 1        |
-| Stop  | `00 10 * * *`      | 0        |
-
-Redis restarts daily at `30 22 * * *` (UTC).
+| Component  | Cron (UTC)         | Action  |
+| ---------- | ------------------ | ------- |
+| Redis      | `30 22 * * *`      | Restart |
+| Broker API | `35 22 * * *`      | Restart |
 
 ## Deploy
 
-```bash
-kubectl apply -f optalpha-deployment.yml
-kubectl apply -f another-autoscaler.yml
-kubectl apply -f Redis
-kubectl apply -f Broker
-```
+1. Copy the deployment bundle to your server:
+
+   **Windows** (using included `pscp.exe`):
+   ```bash
+   pscp -r optalpha-broker_cluster root@<server ip>:/root
+   ```
+
+   **Linux / Mac**:
+   ```bash
+   scp -r optalpha-broker_cluster root@<server ip>:/root
+   ```
+
+2. SSH into the server and run the deploy script:
+   ```bash
+   ssh root@<server ip>
+   sudo chmod +x /root/optalpha-broker_cluster/deploy.sh
+   /root/optalpha-broker_cluster/deploy.sh
+   exit
+   ```
+
+   The script will:
+   - Update system packages
+   - Disable UFW
+   - Install K3s (v1.33.9+k3s1)
+   - Apply all Kubernetes manifests
 
 ## Teardown
 
-```bash
-kubectl delete -f Broker
-kubectl delete -f Redis
-kubectl delete -f another-autoscaler.yml
-kubectl delete -f optalpha-deployment.yml
-```
+1. SSH into the server and run the destroy script:
+   ```bash
+   ssh root@<server ip>
+   sudo chmod +x /root/optalpha-broker_cluster/destroy.sh
+   /root/optalpha-broker_cluster/destroy.sh
+   exit
+   ```
+
+   The script will:
+   - Delete all Kubernetes resources
+   - Remove the deployment directory
+   - Uninstall K3s
 
 ## Resource Limits
 
