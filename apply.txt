@@ -1,5 +1,8 @@
 Windows:
+cmd
 pscp -r optalpha-broker_cluster root@<server ip>:/root
+PS
+.\pscp -r optalpha-broker_cluster root@<server ip>:/root
 
 Linux and Mac
 scp -r optalpha-broker_cluster root@<server ip>:/root
