@@ -4,7 +4,10 @@ metadata:
   name: broker-api-deployment
   namespace: optalpha-deployment
   annotations:
-    another-autoscaler/restart-time: "35 22 * * *"
+    another-autoscaler/start-time: "45 22 * * *"
+    another-autoscaler/start-replicas: "1"
+    another-autoscaler/stop-time: "35 22 * * *"
+    another-autoscaler/stop-replicas: "0"
   labels:
     app: broker-api
 spec:
