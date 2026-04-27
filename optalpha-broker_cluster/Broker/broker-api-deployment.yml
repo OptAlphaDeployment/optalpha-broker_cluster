@@ -21,8 +21,8 @@ spec:
         app: broker-api
     spec:
       containers:
-        - name: broker-api-zero-six
-          image: rpv123/optalpha-broker-server:broker-api-.6
+        - name: broker-api-zero-seven
+          image: rpv123/optalpha-broker-server:broker-api-.7
           env:
             - name: host
               value: ""
