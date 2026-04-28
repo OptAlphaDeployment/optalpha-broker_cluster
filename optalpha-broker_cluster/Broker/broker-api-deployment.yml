@@ -21,8 +21,8 @@ spec:
         app: broker-api
     spec:
       containers:
-        - name: broker-api-zero-seven
-          image: rpv123/optalpha-broker-server:broker-api-.7
+        - name: broker-api-zero-nine
+          image: rpv123/optalpha-broker-server:broker-api-.9
           env:
             - name: host
               value: ""
@@ -38,10 +38,3 @@ spec:
               value: ""
           ports:
             - containerPort: 7777
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "500Mi"
-            limits:
-              cpu: "150m"
-              memory: "750Mi"
