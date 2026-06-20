@@ -2,6 +2,8 @@ ssh root@<server ip>
 
 sudo chmod +x /root/optalpha-broker_cluster/destroy.sh
 
+sed -i 's/\r$//' /root/optalpha-broker_cluster/destroy.sh
+
 /root/optalpha-broker_cluster/destroy.sh
 
 exit

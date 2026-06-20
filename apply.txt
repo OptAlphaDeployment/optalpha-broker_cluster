@@ -11,6 +11,8 @@ ssh root@<server ip>
 
 sudo chmod +x /root/optalpha-broker_cluster/deploy.sh
 
+sed -i 's/\r$//' /root/optalpha-broker_cluster/deploy.sh
+
 /root/optalpha-broker_cluster/deploy.sh
 
 exit
